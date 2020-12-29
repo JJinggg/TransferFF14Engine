@@ -23,7 +23,7 @@ namespace DaSuKeTeMoChi
     {
   
         PapagoEngine engine = new PapagoEngine();
-
+        string Region = "Kor";
         public MainWindow()
         {
             InitializeComponent();
@@ -36,7 +36,7 @@ namespace DaSuKeTeMoChi
             string aef = EncCode.StringCipher.Decrypt(Encdata, "7790451bdf519bf976aaiyJYl9da8a302");*/
             string InSertText = InsertTextBox.Text;
             
-            ResultTextBox.Text= await engine.PostAsync(InSertText);
+            ResultTextBox.Text= await engine.PostAsync(InSertText,"Kor");
         }
 
         private void JpCon_Checked(object sender, RoutedEventArgs e)
@@ -45,6 +45,7 @@ namespace DaSuKeTeMoChi
 
             InsertLabel.Content = "入力 テキスト";
             ResultLabel.Content = "出力 テキスト";
+            Region = "Kor";
         }
 
         private void KorCon_Checked(object sender, RoutedEventArgs e)
@@ -53,6 +54,7 @@ namespace DaSuKeTeMoChi
 
             InsertLabel.Content = "입력 택스트";
             ResultLabel.Content = "출력 택스트";
+            Region = "Jp";
         }
     }
 }

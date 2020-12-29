@@ -52,13 +52,27 @@ namespace DaSuKeTeMoChi
 
 
 
-        public async Task<string> PostAsync(string Text)
+        public async Task<string> PostAsync(string Text,string Region)
         {
 
             Text = UtilityClassDLL.Conversion.HttpUrlEncoding(Text);
-
+            string Source;
+            string Target;
             try
             {
+                if (Region == "Kor")
+                {
+                    Source = "ko";
+                    Target = "ja";
+
+                }
+                else
+                {
+                    Source = "ja";
+                    Target = "ko";
+                }
+
+
                 EncodeJsonProperty EncodeProperty = JsonConvert.DeserializeObject<EncodeJsonProperty>
                 (this.Script.CallGlobalFunction<string>("EncodeTransaltionRequest", 
                 (object)JsonConvert.SerializeObject((object)senddata)));
@@ -82,8 +96,8 @@ namespace DaSuKeTeMoChi
                     $"honorific=false&" +
                     $"instant=false&" +
                     $"paging=false&" +
-                    $"source=ko&" +
-                    $"target=ja&" +
+                    $"source={Source}&" +
+                    $"target={Target}&" +
                     $"text={Text}";
 
                 using (Webformat webformat = new Webformat("https://papago.naver.com/apis/n2mt/translate"))
