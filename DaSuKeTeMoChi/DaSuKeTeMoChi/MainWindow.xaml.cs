@@ -78,6 +78,20 @@ namespace DaSuKeTeMoChi
                 }
         }
 
+        private Color _fieldColor = (Color)ColorConverter.ConvertFromString("#000000");
+        public Color FieldColor
+        {
+            get { return _fieldColor; }
+            set
+            {
+                _fieldColor = value;
+                OnPropertyChanged("FieldColor");
+            }
+        }
+
+
+
+
 
         private async Task<bool> Call_Papago_Transrator()
         {
@@ -126,6 +140,26 @@ namespace DaSuKeTeMoChi
             }
 
         }
+
+        private async void fieldColorChange_Button_Click(object sender, RoutedEventArgs e)
+        {
+           
+
+
+            Color color;
+
+            bool ok = ColorPickerWindow.ShowDialog(out color);
+
+            if (ok)
+            {
+                System.Diagnostics.Debug.WriteLine(color.ToString());
+
+                FieldColor = color;
+
+            }
+
+        }
+
 
         private void JpCon_Checked(object sender, RoutedEventArgs e)
         {

@@ -11,12 +11,12 @@
         Title="助けてく Mochi!" Height="152.666" Width="528.666" ResizeMode="CanResizeWithGrip"
         AllowsTransparency="True"   WindowStyle="None"  VirtualizingPanel.VirtualizationMode="Recycling" Topmost="True">
     <Window.Background>
-        <SolidColorBrush Color="White" Opacity="{Binding Opactiys, UpdateSourceTrigger=PropertyChanged}"></SolidColorBrush>
+        <SolidColorBrush Color="{Binding FieldColor, UpdateSourceTrigger=PropertyChanged}" Opacity="{Binding Opactiys, UpdateSourceTrigger=PropertyChanged}"></SolidColorBrush>
 
 
     </Window.Background>
 
-    <Grid Margin="0,0,10,0" Height="183" VerticalAlignment="Top">
+    <Grid Height="153" VerticalAlignment="Top">
 
 
 
@@ -34,13 +34,13 @@
 
                 <SolidColorBrush Color="White" Opacity="{Binding Opactiys, UpdateSourceTrigger=PropertyChanged}"></SolidColorBrush>
 
-                
+
             </TextBox.Background>
 
         </TextBox>
         <Label x:Name="InsertLabel" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" Content="Insert Text" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="14,12,0,0"/>
         <Label x:Name="ResultLabel" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" Content="Result Text" HorizontalAlignment="Left" Margin="14,49,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.081,-0.75"/>
-        <Button Content="Click" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="357,15,0,0" VerticalAlignment="Top"  Width="75" Click="Button_Click"/>
+        <Button Content="TextColor" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="357,15,0,0" VerticalAlignment="Top"  Width="75" Click="Button_Click"/>
         <RadioButton x:Name="KorCon" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" Content="Kor->Jp" HorizontalAlignment="Left" IsChecked="True" Margin="453,18,0,0" VerticalAlignment="Top" Checked="KorCon_Checked"/>
         <RadioButton x:Name="JpCon" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" Content="Jp->Kor" HorizontalAlignment="Left" IsChecked="False" Margin="453,44,0,0" VerticalAlignment="Top" Checked="JpCon_Checked"/>
         <Slider HorizontalAlignment="Left" Margin="100,129,0,0" VerticalAlignment="Top" Value="5" Width="246" ValueChanged="Slider_ValueChanged"/>
@@ -57,6 +57,7 @@
 
 
         </TextBox>
+        <Button Content="FieldColor" HorizontalAlignment="Left" Margin="357,49,0,0" VerticalAlignment="Top" Width="75" Click="fieldColorChange_Button_Click"/>
 
     </Grid>
 
