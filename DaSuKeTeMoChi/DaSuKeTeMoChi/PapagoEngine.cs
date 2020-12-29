@@ -52,7 +52,7 @@ namespace DaSuKeTeMoChi
 
 
 
-        public async Task<string> PostAsync(string Text,string Region)
+        public async Task<Tuple<string,string>> PostAsync(string Text,string Region)
         {
 
             Text = UtilityClassDLL.Conversion.HttpUrlEncoding(Text);
@@ -60,16 +60,21 @@ namespace DaSuKeTeMoChi
             string Target;
             try
             {
+
+                System.Diagnostics.Debug.WriteLine("Region>>>>" + Region);
                 if (Region == "Kor")
                 {
-                    Source = "ko";
-                    Target = "ja";
+                    Source = "ja";
+                    Target = "ko";
+
+
 
                 }
                 else
                 {
-                    Source = "ja";
-                    Target = "ko";
+
+                    Source = "ko";
+                    Target = "ja";
                 }
 
 
@@ -109,6 +114,8 @@ namespace DaSuKeTeMoChi
                     request.Headers.Add("device-type", "pc");
                     request.Headers.Add("x-apigw-partnerid", "papago");
                     request.Headers.Add("Authorization", AuthHeader);
+                request.Headers.Add("Accept-Language", "ko");
+               
                     request.Timeout = 4000;
                     response = await webformat.GetResponseAsync(request, sendData);
                 }
@@ -116,7 +123,17 @@ namespace DaSuKeTeMoChi
                 {
                     string returnHtmlString = HttpWebIO.ReturnStrHtml(response.GetResponseStream(), Encoding.UTF8);
                     string TransText = StrCut.StrChange(returnHtmlString, "translatedText\":\"", "\"",false);
-                    return TransText;
+
+                    string ttsCutText = StrCut.StrChange(returnHtmlString, "tlit\":{\"message", "delay", false);
+                    string[] ttscutarray = StrCut.ArrSplit(ttsCutText, "phoneme\":\"");
+                    string ttsText = "";
+                    int length = ttscutarray.Length;
+                    for (ushort i = 1; i < length; i++)
+                    {
+                        ttsText += $"{ StrCut.StrChange(ttscutarray[i], null, "\"", false)} ";
+                    }
+                    System.Diagnostics.Debug.WriteLine(ttsText);    
+                    return Tuple.Create(TransText,ttsText);
                 }
             }
             catch(Exception e)
@@ -127,7 +144,82 @@ namespace DaSuKeTeMoChi
 
         }
 
+        public async Task<string> TrueEmote(string Text, string Region)
+        {
 
+            Text = UtilityClassDLL.Conversion.HttpUrlEncoding(Text);
+            string Source;
+            string Target;
+            try
+            {
+
+                System.Diagnostics.Debug.WriteLine("Region>>>>" + Region);
+                if (Region == "Kor")
+                {
+                    Source = "ko";
+                    Target = "ja";
+                }
+                else
+                {
+                    Source = "ja";
+                    Target = "ko";
+                }
+
+
+                EncodeJsonProperty EncodeProperty = JsonConvert.DeserializeObject<EncodeJsonProperty>
+                (this.Script.CallGlobalFunction<string>("EncodeTransaltionRequest",
+                (object)JsonConvert.SerializeObject((object)senddata)));
+                string id = EncodeProperty.Guid; //this.Script.CallGlobalFunction<string>("GetPapgoGuid");
+                string key = EncodeProperty.HmacKey; //"v1.5.1_4dfe1d83c2";
+                string hmacInput = EncodeProperty.HmacInput;  //this.Script.CallGlobalFunction<string>("GetHmacInPut");
+                string Hmacincode = PapagoHmacFin(hmacInput, key);
+                string AuthHeader = string.Format($"PPG {id}:{Hmacincode}");
+
+                HttpWebRequest request = null;
+                HttpWebResponse response = null;
+
+                DateTime date = DateTime.Now;
+                long TimeStamp = (long)date.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+
+                string sendData = $"" +
+                    $"deviceId={id}&" +
+                    $"locale=ko&" +
+                    $"dict=true&" +
+                    $"dictDisplay=30&" +
+                    $"honorific=false&" +
+                    $"instant=false&" +
+                    $"paging=false&" +
+                    $"source={Source}&" +
+                    $"target={Target}&" +
+                    $"text={Text}";
+
+                using (Webformat webformat = new Webformat("https://papago.naver.com/apis/n2mt/translate"))
+                {
+                    request = webformat.CreateNewFormat(cookie, CRUD.Post, Accept.OnlyJson, ContentType.X_www_form_A_UTF8, Certificate.True
+                        , CreateHeader.CreateHeaderCollection(HeaderValue_Flags.Sec_Fetch_Dest_Empty, HeaderValue_Flags.Sec_Fetch_Mode_cors, HeaderValue_Flags.Sec_Fetch_Site_same_origin));
+
+                    request.Headers.Add("Timestamp", EncodeProperty.GuidTime);
+                    request.Headers.Add("device-type", "pc");
+                    request.Headers.Add("x-apigw-partnerid", "papago");
+                    request.Headers.Add("Authorization", AuthHeader);
+                    request.Headers.Add("Accept-Language", "ko");
+
+                    request.Timeout = 4000;
+                    response = await webformat.GetResponseAsync(request, sendData);
+                }
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    string returnHtmlString = HttpWebIO.ReturnStrHtml(response.GetResponseStream(), Encoding.UTF8);
+                    string TransText = StrCut.StrChange(returnHtmlString, "translatedText\":\"", "\"", false);
+                    return TransText;
+                }
+            }
+            catch (Exception e)
+            {
+                DebugLog.e(e);
+            }
+            return null;
+        }
 
     }
 }
