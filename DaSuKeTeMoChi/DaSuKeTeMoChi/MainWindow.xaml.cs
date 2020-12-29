@@ -95,26 +95,38 @@ namespace DaSuKeTeMoChi
 
         private async Task<bool> Call_Papago_Transrator()
         {
-            string InSertText = InsertTextBox.Text;
-            Tuple<string,string> CallbackTuple = await engine.PostAsync(InSertText, Region);
 
-            string ResultText = CallbackTuple.Item1;
-
-            string ttsText = CallbackTuple.Item2;
-
-            if (!string.IsNullOrEmpty(ResultText))
+            try
             {
-                ResultTextBox.Text = ResultText;
-                SpeakText.Content = ttsText;
+                string InSertText = InsertTextBox.Text;
+                Tuple<string, string> CallbackTuple = await engine.PostAsync(InSertText, Region);
+
+                if (String.IsNullOrEmpty(CallbackTuple.Item1))
+                {
+                    return false;
+                }
 
 
-                string CheckText = (await engine.TrueEmote(ResultText, Region));
-                CheckText = CheckText.Replace(" ", "");
-                System.Diagnostics.Debug.WriteLine(CheckText);
-                CheckTextBox.Text = CheckText;
-                return true;
+                string ResultText = CallbackTuple.Item1;
+
+                string ttsText = CallbackTuple.Item2;
+
+                if (!string.IsNullOrEmpty(ResultText))
+                {
+                    ResultTextBox.Text = ResultText;
+                    SpeakText.Content = ttsText;
+
+
+                    string CheckText = (await engine.TrueEmote(ResultText, Region));
+                    CheckText = CheckText.Replace(" ", "");
+                    System.Diagnostics.Debug.WriteLine(CheckText);
+                    CheckTextBox.Text = CheckText;
+                    return true;
+                }
+                return false;
             }
-            return false;
+            catch
+            { return false;  }
         }
 
 
@@ -188,7 +200,14 @@ namespace DaSuKeTeMoChi
                 System.Diagnostics.Debug.WriteLine("You Put Enter");
                 if (await Call_Papago_Transrator())
                 {
-                    Clipboard.SetText(ResultTextBox.Text);
+                    try
+                    {
+                        Clipboard.SetText(ResultTextBox.Text);
+                    }
+                    catch
+                    {
+                        
+                    }
                 }
             }
         }

@@ -44,8 +44,8 @@
         <RadioButton x:Name="KorCon" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" Content="Kor->Jp" HorizontalAlignment="Left" IsChecked="True" Margin="453,18,0,0" VerticalAlignment="Top" Checked="KorCon_Checked"/>
         <RadioButton x:Name="JpCon" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" Content="Jp->Kor" HorizontalAlignment="Left" IsChecked="False" Margin="453,44,0,0" VerticalAlignment="Top" Checked="JpCon_Checked"/>
         <Slider HorizontalAlignment="Left" Margin="100,129,0,0" VerticalAlignment="Top" Value="5" Width="246" ValueChanged="Slider_ValueChanged"/>
-        <Label x:Name="SpeakText" Content="" HorizontalAlignment="Left" Margin="100,75,0,0" VerticalAlignment="Top" Height="26" FontSize="10" Width="246"/>
-        <Label Content="Check Text" HorizontalAlignment="Left" Margin="14,101,0,0" VerticalAlignment="Top" Height="23" Width="70"/>
+        <Label x:Name="SpeakText" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" Content="" HorizontalAlignment="Left" Margin="100,75,0,0" VerticalAlignment="Top" Height="26" FontSize="10" Width="246"/>
+        <Label Content="Check Text" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="14,101,0,0" VerticalAlignment="Top" Height="23" Width="70"/>
         <TextBox x:Name="CheckTextBox"  HorizontalAlignment="Left" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}"  Height="23" Margin="100,101,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="246">
 
             <TextBox.Background>
@@ -57,7 +57,7 @@
 
 
         </TextBox>
-        <Button Content="FieldColor" HorizontalAlignment="Left" Margin="357,49,0,0" VerticalAlignment="Top" Width="75" Click="fieldColorChange_Button_Click"/>
+        <Button Content="FieldColor" HorizontalAlignment="Left" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" Margin="357,49,0,0" VerticalAlignment="Top" Width="75" Click="fieldColorChange_Button_Click"/>
 
     </Grid>
 

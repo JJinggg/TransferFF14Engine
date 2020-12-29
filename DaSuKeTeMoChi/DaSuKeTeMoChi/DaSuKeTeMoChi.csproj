@@ -56,10 +56,10 @@
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="UtilityClassDLL">
-      <HintPath>..\..\..\..\Desktop\SellerGit\DLL\UtilityClassDLL\UtilityClassDLL\bin\Debug\netstandard2.0\UtilityClassDLL.dll</HintPath>
+      <HintPath>..\UtilityClassDLL.dll</HintPath>
     </Reference>
     <Reference Include="WebformetInjection">
-      <HintPath>..\..\..\..\Desktop\SellerGit\DLL\WebformetInjection\bin\Debug\netstandard2.0\WebformetInjection.dll</HintPath>
+      <HintPath>..\WebformetInjection.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
