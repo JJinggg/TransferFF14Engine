@@ -3,4 +3,6 @@ hello do you know papago?
 
 
 
+THANKSS
 Refer To https://github.com/NightlyRevenger/TataruHelper
+         https://github.com/drogoganor/ColorPickerWPF
