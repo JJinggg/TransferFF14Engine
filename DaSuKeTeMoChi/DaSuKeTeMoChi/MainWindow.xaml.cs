@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ColorPickerWPF;
+using UtilityClassDLL;
 
 namespace DaSuKeTeMoChi
 {
@@ -23,7 +26,13 @@ namespace DaSuKeTeMoChi
     /// </summary>
     public partial class MainWindow : Window , INotifyPropertyChanged
     {
-  
+        PropertyInfo Property_Opactiys;
+        PropertyInfo Property_TextColor;
+        PropertyInfo Property_FieldColor;
+        PropertyInfo Property_SliderValue;
+            
+
+
         PapagoEngine engine = new PapagoEngine();
         string Region = "Kor";
         public MainWindow()
@@ -31,8 +40,45 @@ namespace DaSuKeTeMoChi
             InitializeComponent();
 
             this.DataContext = this;
-            
-          
+
+            CallSettings();
+        }
+
+
+        protected void CallSettings()
+        {
+            string[] SettingValues = File.ReadAllLines(@"Settings.txt");
+
+
+            Type type = typeof(UiConfig.OverLaySettings);
+            Object _settings = Activator.CreateInstance(type);
+            Property_Opactiys = type.GetProperty("Opactiys");
+            Property_TextColor = type.GetProperty("TextColor");
+            Property_FieldColor = type.GetProperty("FieldColor");
+            Property_SliderValue = type.GetProperty("SliderValue");
+
+
+            Property_TextColor.SetValue(_settings, "3030",null);
+
+            Console.WriteLine(Property_TextColor.GetValue(_settings, null));
+
+            for (int i = 0; i < SettingValues.Length; i++)
+            {
+                string[] values = StrCut.ArrSplit(SettingValues[i], "=");
+                Type ts =_settings.GetType().GetProperty(values[0]).PropertyType;
+                
+                _settings.GetType().GetProperty(values[0]).SetValue(_settings, Convert.ChangeType(values[1],ts), null);
+
+
+                System.Diagnostics.Debug.WriteLine(">>>>>>>>" + _settings.GetType().GetProperty(values[0]).GetValue(_settings, null));
+            }
+
+
+
+
+
+
+
         }
 
 
@@ -67,6 +113,16 @@ namespace DaSuKeTeMoChi
 
             }
         }
+        private int _sliderValue = 5;
+        public int SliderValue
+        {
+            get { return _sliderValue; }
+            set {
+                _sliderValue = value;
+                OnPropertyChanged("SliderValue");
+            }
+        }
+
 
         private SolidColorBrush _TextColor = (SolidColorBrush)new BrushConverter().ConvertFrom("#000000");
         public SolidColorBrush TextColor
