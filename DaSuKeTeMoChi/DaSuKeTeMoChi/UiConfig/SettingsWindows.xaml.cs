@@ -98,12 +98,9 @@ namespace DaSuKeTeMoChi.UiConfig
             
 
         }
-
-
-
         protected void CallSettings()
         {
-            string[] SettingValues = File.ReadAllLines(@"Settings.txt");
+            string[] SettingValues = File.ReadAllLines(@"Config\Settings.txt");
             ushort Length = (ushort)SettingValues.Length;
 
             for (ushort i = 0; i < Length; i++)
@@ -113,19 +110,11 @@ namespace DaSuKeTeMoChi.UiConfig
                 _settings.GetType().GetProperty(values[0]).SetValue(_settings, Convert.ChangeType(values[1], ts), null);
             }
         }
-
-
-
-
         protected void SetUpSettingsReflection()
         {
             type = typeof(UiConfig.OverLaySettings);
             _settings = Activator.CreateInstance(type);
         }
-
-
-
-
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
@@ -133,38 +122,26 @@ namespace DaSuKeTeMoChi.UiConfig
             this.DragMove();
 
         }
-
-
-
         private async void FieldColorChange_Button_Click(object sender, RoutedEventArgs e)
         {
 
             Color color;
-
             bool ok = ColorPickerWindow.ShowDialog(out color);
-
             if (ok)
             {
-                System.Diagnostics.Debug.WriteLine(color.ToString());
+                FieldColorBinder = color;
+                _settings.GetType().GetProperty("FieldColor").SetValue(_settings, color.ToString());
             }
-
-            FieldColorBinder = color;
-            _settings.GetType().GetProperty("FieldColor").SetValue(_settings, color.ToString());
         }
         private async void TextColorChange_Button_Click(object sender, RoutedEventArgs e)
         {
-
             Color color;
-
             bool ok = ColorPickerWindow.ShowDialog(out color);
-
             if (ok)
             {
                 TextColorBinder = color;
                 _settings.GetType().GetProperty("TextColor").SetValue(_settings, color.ToString());
             }
-
-         
         }
         private async void Settings_Save_Button_Click(object sender, RoutedEventArgs e)
         {
@@ -175,41 +152,41 @@ namespace DaSuKeTeMoChi.UiConfig
             window.Show();
             this.Close();
         }
-        protected void WriteTextToFile(StreamWriter stream,string WriteTextValueName)
-        {
-            switch (WriteTextValueName)
-            {
-                case "TextColor":
-                    stream.WriteLine($"{WriteTextValueName}={TextColorBinder}");
-                    break;
-                case "FieldColor":
-                    stream.WriteLine($"{WriteTextValueName}={FieldColorBinder}");
-                    break;
-                case "SliderValue":
-                    stream.WriteLine($"{WriteTextValueName}={SliderValue}");
-                    break;
-                default:
-                    break;
-            }
-        }
+       
 
         protected async void SaveDataToTextFile()
-        {
-
-            bool ExitsTxtFile = File.Exists(@"Settings.txt");
-            
+        { 
             string[] Lines;
             
-            Lines = File.ReadAllLines(@"Settings.txt");
+            Lines = File.ReadAllLines(@"Config\Settings.txt");
 
-            using (System.IO.StreamWriter SaveFile = new System.IO.StreamWriter(@"Settings.txt"))
+            using (System.IO.StreamWriter SaveFile = new System.IO.StreamWriter(@"Config\Settings.txt"))
             {
                 foreach (string lineText in Lines)
                 {
                     string TempText = null;
                     int PixNum = Array.IndexOf(Lines, lineText);
                     TempText = StrCut.StrChange(lineText, null, "=", false);
-                    WriteTextToFile(SaveFile, TempText);
+                    string WriteValue =null;
+
+                    switch (TempText)
+                    {
+                        case "TextColor":
+                            WriteValue = $"{TextColorBinder}";
+                            break;
+                        case "FieldColor":
+                            WriteValue = $"{FieldColorBinder}";
+                            break;
+                        case "SliderValue":
+                            WriteValue = $"{SliderValue}";
+                            break;
+                        default:
+                            break;
+                    }
+                    StreamHandler.Writer writer = new StreamHandler.Writer();
+
+                    writer.WriteTextToFile(SaveFile, TempText,WriteValue);
+
                 }
             }
             

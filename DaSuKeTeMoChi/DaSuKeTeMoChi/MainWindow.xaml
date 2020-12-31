@@ -7,6 +7,7 @@
         
         mc:Ignorable="d"
         
+        x:Name="MainWindows"
        
         Title="助けてく Mochi!" Height="128.237" Width="421.309" ResizeMode="CanResizeWithGrip"
         AllowsTransparency="True"   WindowStyle="None"  VirtualizingPanel.VirtualizationMode="Recycling" Topmost="True">
@@ -16,7 +17,7 @@
 
     </Window.Background>
 
-    <Grid>
+    <Grid x:Name="MainGrid">
 
 
 
@@ -40,9 +41,9 @@
         </TextBox>
         <Label x:Name="InsertLabel" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" Content="입력/入力" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,12,0,0"/>
         <Label x:Name="ResultLabel" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" Content="출력/出力" HorizontalAlignment="Left" Margin="10,49,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.081,-0.75"/>
-        <RadioButton x:Name="KorCon" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" Content="Kor->Jp" HorizontalAlignment="Left" IsChecked="True" Margin="346,18,0,0" VerticalAlignment="Top" Checked="KorCon_Checked"/>
-        <RadioButton x:Name="JpCon" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" Content="Jp->Kor" HorizontalAlignment="Left" IsChecked="False" Margin="346,55,0,0" VerticalAlignment="Top" Checked="JpCon_Checked"/>
-        <Label x:Name="SpeakText" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" Content="" HorizontalAlignment="Left" Margin="100,75,0,0" VerticalAlignment="Top" Height="26" FontSize="10" Width="246"/>
+        <RadioButton x:Name="KorCon" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" Content="Kor->Jp" HorizontalAlignment="Left" IsChecked="True" Margin="346,48,0,0" VerticalAlignment="Top" Checked="KorCon_Checked"/>
+        <RadioButton x:Name="JpCon" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" Content="Jp->Kor" HorizontalAlignment="Left" IsChecked="False" Margin="346,68,0,0" VerticalAlignment="Top" Checked="JpCon_Checked"/>
+        <Label x:Name="SpeakText" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" Content="" HorizontalAlignment="Left" Margin="79,75,0,0" VerticalAlignment="Top" Height="26" FontSize="10" Width="246"/>
         <Label Content="확인/確認" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="10,93,0,0" VerticalAlignment="Top" Height="28" Width="70"/>
         <TextBox x:Name="CheckTextBox"  HorizontalAlignment="Left" Foreground="{Binding TextColor ,UpdateSourceTrigger=PropertyChanged}"  Height="23" Margin="78,93,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="246" RenderTransformOrigin="0.517,1.071">
 
@@ -56,6 +57,7 @@
 
         </TextBox>
         <Button Content="Settings" HorizontalAlignment="Left" Margin="346,93,0,0" VerticalAlignment="Top" Width="62" Click="Settings_Config_Click" RenderTransformOrigin="0.407,0.029"/>
+        <Button Content="X" HorizontalAlignment="Left" Margin="397,4,0,0" VerticalAlignment="Top" Padding="0" Width="18" Height="16" RenderTransformOrigin="0.524,0" Click="Exit_Click"/>
 
     </Grid>
 

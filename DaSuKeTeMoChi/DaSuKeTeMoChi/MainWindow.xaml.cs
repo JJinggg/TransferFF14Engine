@@ -29,63 +29,23 @@ namespace DaSuKeTeMoChi
         Type type;
         Object _settings;
         PapagoEngine engine = new PapagoEngine();
+        UiConfig.CheckConfigInfo check =new UiConfig.CheckConfigInfo();
+
+        private double WindowX;
+        private double WindowY;
 
         string Region = "Kor";
-        public MainWindow()
-        {
-            InitializeComponent();
-
-            this.DataContext = this;
-            type = typeof(UiConfig.OverLaySettings);
-            _settings = Activator.CreateInstance(type);
-            CallSettings();
-            SetUpSettings();
-        }
-
-
-        protected void CallSettings()
-        {
-            string[] SettingValues = File.ReadAllLines(@"Settings.txt");
-            for (int i = 0; i < SettingValues.Length; i++)
-            {
-                string[] values = StrCut.ArrSplit(SettingValues[i], "=");
-                Type ts = _settings.GetType().GetProperty(values[0]).PropertyType;
-                _settings.GetType().GetProperty(values[0]).SetValue(_settings, Convert.ChangeType(values[1], ts), null);
-            }
-        }
-        protected void SetUpSettings()
-        {
-            System.Diagnostics.Debug.WriteLine(Convert.ToInt32(_settings.GetType().GetProperty("SliderValue").GetValue(_settings, null)));
-            TextColor = (SolidColorBrush)new BrushConverter().ConvertFrom((string)_settings.GetType().GetProperty("TextColor").GetValue(_settings, null));
-            FieldColor = (Color)ColorConverter.ConvertFromString((string)_settings.GetType().GetProperty("FieldColor").GetValue(_settings, null));
-            SliderValue = Convert.ToInt32(_settings.GetType().GetProperty("SliderValue").GetValue(_settings, null));
-            double temp = (double)(Convert.ToDouble(SliderValue) / 10);
-             Opactiys = temp;
-
-
-        }
-
-
-        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
-        {
-            base.OnMouseLeftButtonDown(e);
-
-            this.DragMove();
-
-        }
-
-        public double _Opactiys = 0.5;
+        #region propertyChange Event Handler
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string name)
+        protected void OnPropertyChanged(string Name)
         {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(name));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(Name));
         }
 
+        #endregion
+        #region Binder Method
+        public double _Opactiys = 0.5;
         public double Opactiys
         {
             get { return _Opactiys; }
@@ -131,7 +91,98 @@ namespace DaSuKeTeMoChi
                 OnPropertyChanged("FieldColor");
             }
         }
+        #endregion
 
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            this.DataContext = this;
+            type = typeof(UiConfig.OverLaySettings);
+            _settings = Activator.CreateInstance(type);
+
+
+            MoveLocationConfig();
+            MainWindows.Left = WindowX;
+            MainWindows.Top = WindowY;
+
+            if (check.CheckSettingsConfig())
+            {
+
+                CallSettings();
+                SetUpSettings();
+            }
+            else
+            {
+                MessageBox.Show("세팅파일 불러오기/생성 실패! 다시켜주세요");
+            }
+
+        }
+
+        protected void MoveLocationConfig()
+        {
+            if (check.FileCheckConfig(@"Config\LocationConfig.txt"))
+            {
+                string[] line = File.ReadAllLines(@"Config\LocationConfig.txt");
+                WindowX = Convert.ToDouble(StrCut.StrChange(line[0], "=", null, true));
+                WindowY = Convert.ToDouble(StrCut.StrChange(line[1], "=", null, true));
+
+
+            }
+        }
+
+
+
+
+
+        protected void CallSettings()
+        {
+            string[] SettingValues = File.ReadAllLines(@"Config\Settings.txt");
+            for (int i = 0; i < SettingValues.Length; i++)
+            {
+                string[] values = StrCut.ArrSplit(SettingValues[i], "=");
+                Type ts = _settings.GetType().GetProperty(values[0]).PropertyType;
+                _settings.GetType().GetProperty(values[0]).SetValue(_settings, Convert.ChangeType(values[1], ts), null);
+            }
+        }
+        protected void SetUpSettings()
+        {
+            System.Diagnostics.Debug.WriteLine(Convert.ToInt32(_settings.GetType().GetProperty("SliderValue").GetValue(_settings, null)));
+            TextColor = (SolidColorBrush)new BrushConverter().ConvertFrom((string)_settings.GetType().GetProperty("TextColor").GetValue(_settings, null));
+            FieldColor = (Color)ColorConverter.ConvertFromString((string)_settings.GetType().GetProperty("FieldColor").GetValue(_settings, null));
+            SliderValue = Convert.ToInt32(_settings.GetType().GetProperty("SliderValue").GetValue(_settings, null));
+            double temp = (double)(Convert.ToDouble(SliderValue) / 10);
+             Opactiys = temp;
+        }
+
+
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+
+           
+            this.DragMove();
+
+        }
+
+        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+        {
+            var location = MainWindows.PointToScreen(new Point(0, 0));
+            System.Diagnostics.Debug.WriteLine(location.ToString());
+            WindowX = location.X;
+            WindowY = location.Y;
+
+            using (System.IO.StreamWriter SaveFile = new System.IO.StreamWriter(@"Config\LocationConfig.txt"))
+            {
+                    StreamHandler.Writer writer = new StreamHandler.Writer();
+                    writer.WriteTextToFile(SaveFile, "X", location.X.ToString());
+                    writer.WriteTextToFile(SaveFile, "Y", location.Y.ToString());
+            }
+
+            base.OnMouseLeftButtonUp(e);
+        }
+
+      
         private async Task<bool> Call_Papago_Transrator()
         {
 
@@ -167,8 +218,6 @@ namespace DaSuKeTeMoChi
             catch
             { return false; }
         }
-
-
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -210,14 +259,11 @@ namespace DaSuKeTeMoChi
             }
 
         }
-
-
         private void JpCon_Checked(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine("isCheck - Jpcon"); 
             Region = "Kor";
         }
-
         private void KorCon_Checked(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine("isCheck - Korcon"); 
@@ -263,5 +309,15 @@ namespace DaSuKeTeMoChi
             this.Close();
 
         }
+
+        private async void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            Environment.Exit(0);
+            System.Diagnostics.Process.GetCurrentProcess().Kill();
+            this.Close();
+        }
+
+
     }
 }
+
