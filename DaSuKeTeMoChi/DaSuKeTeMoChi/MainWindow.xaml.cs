@@ -24,59 +24,43 @@ namespace DaSuKeTeMoChi
     /// <summary>
     /// MainWindow.xaml에 대한 상호 작용 논리
     /// </summary>
-    public partial class MainWindow : Window , INotifyPropertyChanged
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        PropertyInfo Property_Opactiys;
-        PropertyInfo Property_TextColor;
-        PropertyInfo Property_FieldColor;
-        PropertyInfo Property_SliderValue;
-            
-
-
+        Type type;
+        Object _settings;
         PapagoEngine engine = new PapagoEngine();
+
         string Region = "Kor";
         public MainWindow()
         {
             InitializeComponent();
 
             this.DataContext = this;
-
+            type = typeof(UiConfig.OverLaySettings);
+            _settings = Activator.CreateInstance(type);
             CallSettings();
+            SetUpSettings();
         }
 
 
         protected void CallSettings()
         {
             string[] SettingValues = File.ReadAllLines(@"Settings.txt");
-
-
-            Type type = typeof(UiConfig.OverLaySettings);
-            Object _settings = Activator.CreateInstance(type);
-            Property_Opactiys = type.GetProperty("Opactiys");
-            Property_TextColor = type.GetProperty("TextColor");
-            Property_FieldColor = type.GetProperty("FieldColor");
-            Property_SliderValue = type.GetProperty("SliderValue");
-
-
-            Property_TextColor.SetValue(_settings, "3030",null);
-
-            Console.WriteLine(Property_TextColor.GetValue(_settings, null));
-
             for (int i = 0; i < SettingValues.Length; i++)
             {
                 string[] values = StrCut.ArrSplit(SettingValues[i], "=");
-                Type ts =_settings.GetType().GetProperty(values[0]).PropertyType;
-                
-                _settings.GetType().GetProperty(values[0]).SetValue(_settings, Convert.ChangeType(values[1],ts), null);
-
-
-                System.Diagnostics.Debug.WriteLine(">>>>>>>>" + _settings.GetType().GetProperty(values[0]).GetValue(_settings, null));
+                Type ts = _settings.GetType().GetProperty(values[0]).PropertyType;
+                _settings.GetType().GetProperty(values[0]).SetValue(_settings, Convert.ChangeType(values[1], ts), null);
             }
-
-
-
-
-
+        }
+        protected void SetUpSettings()
+        {
+            System.Diagnostics.Debug.WriteLine(Convert.ToInt32(_settings.GetType().GetProperty("SliderValue").GetValue(_settings, null)));
+            TextColor = (SolidColorBrush)new BrushConverter().ConvertFrom((string)_settings.GetType().GetProperty("TextColor").GetValue(_settings, null));
+            FieldColor = (Color)ColorConverter.ConvertFromString((string)_settings.GetType().GetProperty("FieldColor").GetValue(_settings, null));
+            SliderValue = Convert.ToInt32(_settings.GetType().GetProperty("SliderValue").GetValue(_settings, null));
+            double temp = (double)(Convert.ToDouble(SliderValue) / 10);
+             Opactiys = temp;
 
 
         }
@@ -104,10 +88,11 @@ namespace DaSuKeTeMoChi
 
         public double Opactiys
         {
-            get {return _Opactiys; }
-            set {
-                
-                _Opactiys  = value;
+            get { return _Opactiys; }
+            set
+            {
+
+                _Opactiys = value;
 
                 OnPropertyChanged("Opactiys");
 
@@ -117,7 +102,8 @@ namespace DaSuKeTeMoChi
         public int SliderValue
         {
             get { return _sliderValue; }
-            set {
+            set
+            {
                 _sliderValue = value;
                 OnPropertyChanged("SliderValue");
             }
@@ -128,10 +114,11 @@ namespace DaSuKeTeMoChi
         public SolidColorBrush TextColor
         {
             get { return _TextColor; }
-            set {
-                  _TextColor = value;
-                  OnPropertyChanged("TextColor");
-                }
+            set
+            {
+                _TextColor = value;
+                OnPropertyChanged("TextColor");
+            }
         }
 
         private Color _fieldColor = (Color)ColorConverter.ConvertFromString("#000000");
@@ -144,10 +131,6 @@ namespace DaSuKeTeMoChi
                 OnPropertyChanged("FieldColor");
             }
         }
-
-
-
-
 
         private async Task<bool> Call_Papago_Transrator()
         {
@@ -182,11 +165,11 @@ namespace DaSuKeTeMoChi
                 return false;
             }
             catch
-            { return false;  }
+            { return false; }
         }
 
 
-        
+
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             /* if (await Call_Papago_Transrator())
@@ -200,7 +183,7 @@ namespace DaSuKeTeMoChi
             bool ok = ColorPickerWindow.ShowDialog(out color);
 
             if (ok)
-            { 
+            {
                 System.Diagnostics.Debug.WriteLine(color.ToString());
 
                 TextColor = (SolidColorBrush)new BrushConverter().ConvertFrom($"{color.ToString()}");
@@ -211,7 +194,7 @@ namespace DaSuKeTeMoChi
 
         private async void fieldColorChange_Button_Click(object sender, RoutedEventArgs e)
         {
-           
+
 
 
             Color color;
@@ -231,21 +214,13 @@ namespace DaSuKeTeMoChi
 
         private void JpCon_Checked(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("isCheck - Jpcon");
-         
-            InsertLabel.Content = "入力 テキスト";
-            ResultLabel.Content = "出力 テキスト";
+            System.Diagnostics.Debug.WriteLine("isCheck - Jpcon"); 
             Region = "Kor";
         }
 
         private void KorCon_Checked(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("isCheck - Korcon");
-
-           
-
-            InsertLabel.Content = "입력 택스트";
-            ResultLabel.Content = "출력 택스트";
+            System.Diagnostics.Debug.WriteLine("isCheck - Korcon"); 
             Region = "Jp";
         }
 
@@ -262,7 +237,7 @@ namespace DaSuKeTeMoChi
                     }
                     catch
                     {
-                        
+
                     }
                 }
             }
@@ -274,6 +249,19 @@ namespace DaSuKeTeMoChi
             double temp = e.NewValue / 10;
             Opactiys = temp;
             //System.Diagnostics.Debug.WriteLine(temp);
+        }
+
+
+
+        private async void Settings_Config_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationWindow navigation = new NavigationWindow();
+
+            UiConfig.SettingsWindows settingsWindows = new UiConfig.SettingsWindows();
+            
+            settingsWindows.Show();
+            this.Close();
+
         }
     }
 }

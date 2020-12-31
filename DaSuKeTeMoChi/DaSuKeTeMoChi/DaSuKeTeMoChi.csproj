@@ -74,6 +74,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="SendDataRequest.cs" />
+    <Compile Include="UiConfig\OverLaySettings.cs" />
+    <Compile Include="UiConfig\SettingsWindows.xaml.cs">
+      <DependentUpon>SettingsWindows.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UiConfig\SetUp.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -88,6 +93,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="UiConfig\SettingsWindows.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PapagoEngine.cs" />
