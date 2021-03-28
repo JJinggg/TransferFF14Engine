@@ -81,6 +81,35 @@ namespace DaSuKeTeMoChi
                     }
 
 
+                    if (Region == "Kor")
+                    {
+                        Source = "ja";
+                        Target = "ko";
+                    }
+                    else if (Region == "Jp")
+                    {
+
+                        Source = "ko";
+                        Target = "ja";
+                    }
+                    else if (Region == "KE")
+                    {
+
+                        Source = "ko";
+                        Target = "en";
+                    }
+                    else if (Region == "EK")
+                    {
+                        Source = "en";
+                        Target = "ko";
+                    }
+                    else
+                    {
+                        Source = "ko";
+                        Target = "ja";
+                    }
+
+
                     EncodeJsonProperty EncodeProperty = JsonConvert.DeserializeObject<EncodeJsonProperty>
                     (this.Script.CallGlobalFunction<string>("EncodeTransaltionRequest",
                     (object)JsonConvert.SerializeObject((object)senddata)));
@@ -131,6 +160,8 @@ namespace DaSuKeTeMoChi
                         string returnHtmlString = HttpWebIO.ReturnStrHtml(response.GetResponseStream(), Encoding.UTF8);
                         string TransText = StrCut.StrChange(returnHtmlString, "translatedText\":\"", "\"", false);
 
+                        request?.Abort();
+                        response?.Close();
                         string ttsCutText = StrCut.StrChange(returnHtmlString, "tlit\":{\"message", "delay", false);
                         string[] ttscutarray = StrCut.ArrSplit(ttsCutText, "phoneme\":\"");
                         string ttsText = "";
@@ -142,20 +173,27 @@ namespace DaSuKeTeMoChi
                         System.Diagnostics.Debug.WriteLine(ttsText);
                         return Tuple.Create(TransText, ttsText);
                     }
+                    request?.Abort();
+                    response?.Close();
+                    
                 }
                 catch (Exception e)
                 {
-                    DebugLog.e(e);
+                    request?.Abort();
+                    response?.Close();
+                    //DebugLog.e(e);
                 }
                 return null;
             }
             catch
             {
+                
                 return null;
             }
             finally
             {
-                request.Abort();
+                request?.Abort();
+                response?.Close();
             }
         }
 
@@ -171,18 +209,31 @@ namespace DaSuKeTeMoChi
                 try
                 {
 
-                    System.Diagnostics.Debug.WriteLine("Region>>>>" + Region);
                     if (Region == "Kor")
                     {
                         Source = "ko";
                         Target = "ja";
+                    }
+                    else if (Region == "Jp")
+                    {
+                        Source = "ja";
+                        Target = "ko";
+                    }
+                    else if (Region == "KE")
+                    {
+                        Source = "en";
+                        Target = "ko";
+                    }
+                    else if (Region == "EK")
+                    {
+                        Source = "ko";
+                        Target = "en";
                     }
                     else
                     {
                         Source = "ja";
                         Target = "ko";
                     }
-
 
                     EncodeJsonProperty EncodeProperty = JsonConvert.DeserializeObject<EncodeJsonProperty>
                     (this.Script.CallGlobalFunction<string>("EncodeTransaltionRequest",
@@ -241,7 +292,8 @@ namespace DaSuKeTeMoChi
 
             finally
             {
-                request.Abort();
+                request?.Abort();
+                response?.Close();
             }
         }
 
