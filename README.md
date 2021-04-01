@@ -11,3 +11,5 @@ https://github.com/NightlyRevenger/TataruHelper
 https://github.com/drogoganor/ColorPickerWPF
         
 https://github.com/k4keye/Csharp-StrCutDLL
+
+https://github.com/JJinggg/WebFormatInjection
