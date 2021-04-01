@@ -1,0 +1,24 @@
+﻿<Window x:Class="DaSuKeTeMoChi.UiConfig.HotKey.HotKeyWindows"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DaSuKeTeMoChi.UiConfig.HotKey"
+        mc:Ignorable="d"
+        x:Name="HotKeyWindow"
+        Title="HotKeyWindows" Height="93.845" Width="302.287" ResizeMode="CanResize"  AllowsTransparency="True" WindowStyle="None">
+
+
+
+    <Grid>
+        <Label Content="입력창으로 이동:" HorizontalAlignment="Left" Height="28" Margin="5,7,-114,-35" VerticalAlignment="Top" Width="109"/>
+        <Label Content="출력값복사:" HorizontalAlignment="Left" Height="25" Margin="5,35,-107,-60" VerticalAlignment="Top" Width="102" RenderTransformOrigin="0.5,0.5">
+        </Label>
+        <TextBox HorizontalAlignment="Left" IsReadOnly="True" Height="21" Margin="114,11,-240,-32" TextWrapping="Wrap" Text="{Binding MoveInputText,TargetNullValue=미지정,FallbackValue=미지정}" VerticalAlignment="Top" Width="126" RenderTransformOrigin="0.5,0.5"></TextBox>
+        <TextBox HorizontalAlignment="Left" IsReadOnly="True" Height="21" Margin="114,39,-240,-60" TextWrapping="Wrap" Text="{Binding CopyPutText,TargetNullValue=미지정,FallbackValue=미지정}" VerticalAlignment="Top" Width="126" RenderTransformOrigin="0.5,0.5" />
+        <Button   Content="설정" HorizontalAlignment="Left" Height="21" Margin="250,11,-297,-32" VerticalAlignment="Top" Width="47" Click="InputSetClick"/>
+        <Button   Content="설정" HorizontalAlignment="Left" Height="22" Margin="250,38,-297,-60" VerticalAlignment="Top" Width="47" Click="OutputSetClick"/>
+        <Button Content="확인" HorizontalAlignment="Left" Height="19" Margin="140,69,-197,-88" VerticalAlignment="Top" Width="57" Click="Close"/>
+
+    </Grid>
+</Window>

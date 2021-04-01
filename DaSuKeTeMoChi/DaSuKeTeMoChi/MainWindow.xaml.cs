@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ColorPickerWPF;
+using Newtonsoft.Json;
 using UtilityClassDLL;
 
 namespace DaSuKeTeMoChi
@@ -101,11 +102,10 @@ namespace DaSuKeTeMoChi
             type = typeof(UiConfig.OverLaySettings);
             _settings = Activator.CreateInstance(type);
 
-
             MoveLocationConfig();
             MainWindows.Left = WindowX;
             MainWindows.Top = WindowY;
-
+          //  BindKey();
             try
             {
                 if (check.CheckSettingsConfig())
@@ -126,6 +126,61 @@ namespace DaSuKeTeMoChi
 
         }
 
+
+
+
+        public void BindKey()
+        {
+            string jsonPath = @"Config\HotKeys.json";
+            using (StreamReader r = new StreamReader(jsonPath))
+            {
+                string jsontext = r.ReadToEnd();
+                var json = JsonConvert.DeserializeObject<UiConfig.HotKey.HotKeyJsonProperty.HotKeys>(jsontext);
+
+                if (json.InputSelectKey != null)
+                {
+                    string[] Inputkey = StrCut.ArrSplit(json.InputSelectKey, "+");
+
+                    Key Insk;
+                    Key insModi;
+
+                    foreach (var v in Inputkey)
+                    {
+
+                        var enums = (Key)Enum.Parse(typeof(Key), v, true);
+
+                        if (enums != Key.RightAlt &&
+                            enums != Key.LeftAlt &&
+                            enums != Key.RightCtrl &&
+                            enums != Key.LeftCtrl &&
+                            enums != Key.RightShift &&
+                            enums != Key.LeftShift)
+                        {
+                            Insk = enums;
+                        }
+                        else
+                        {
+                            insModi = enums;
+                        }
+                }
+                }
+
+
+
+                var _hotkey = new HotsKey(Key.F9, KeyModifier.Shift | KeyModifier.Ctrl | KeyModifier.Alt, OnHotKeyHandler); 
+                var _hotkey2 = new HotsKey(Key.F9, KeyModifier.Shift | KeyModifier.Alt, OnHotKeyHandler2);
+            }
+        }
+        private void OnHotKeyHandler(HotsKey hotKey)
+        {
+            System.Diagnostics.Debug.WriteLine("KEYSET");
+        }
+
+        private void OnHotKeyHandler2(HotsKey hotKey)
+        {
+            System.Diagnostics.Debug.WriteLine("KEYSET2");
+        }
+         
         protected void MoveLocationConfig()
         {
             if (check.FileCheckConfig(@"Config\LocationConfig.txt"))
@@ -143,11 +198,7 @@ namespace DaSuKeTeMoChi
                     return;
                 }
             }
-        }
-
-
-
-
+        } 
 
         protected void CallSettings()
         {
@@ -181,7 +232,6 @@ namespace DaSuKeTeMoChi
                 return;
             }
         }
-
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             try
@@ -194,7 +244,6 @@ namespace DaSuKeTeMoChi
                 return;
             }
         }
-
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
             try
@@ -217,8 +266,6 @@ namespace DaSuKeTeMoChi
             }
             base.OnMouseLeftButtonUp(e);
         }
-
-      
         private async Task<bool> Call_Papago_Transrator()
         {
 
@@ -283,15 +330,13 @@ namespace DaSuKeTeMoChi
 
                 if (ok)
                 {
-                    FieldColor = color;
-
+                    FieldColor = color; 
                 }
             }
             catch
             { 
 
-            }
-
+            } 
         }
         private void JpCon_Checked(object sender, RoutedEventArgs e)
         {
@@ -348,9 +393,7 @@ namespace DaSuKeTeMoChi
             {
                 
             }
-        }
-
-
+        } 
 
         private async void Settings_Config_Click(object sender, RoutedEventArgs e)
         {

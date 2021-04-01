@@ -119,8 +119,7 @@ namespace DaSuKeTeMoChi.UiConfig
         {
             base.OnMouseLeftButtonDown(e);
 
-            this.DragMove();
-
+            this.DragMove(); 
         }
         private async void FieldColorChange_Button_Click(object sender, RoutedEventArgs e)
         {
@@ -185,12 +184,16 @@ namespace DaSuKeTeMoChi.UiConfig
                     }
                     StreamHandler.Writer writer = new StreamHandler.Writer();
 
-                    writer.WriteTextToFile(SaveFile, TempText,WriteValue);
-
+                    writer.WriteTextToFile(SaveFile, TempText,WriteValue); 
                 }
-            }
-            
+            } 
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            UiConfig.HotKey.HotKeyWindows hotKeyWindows = new UiConfig.HotKey.HotKeyWindows();
+            hotKeyWindows.Show();
+            this.Close(); 
+        }
     }
 }
