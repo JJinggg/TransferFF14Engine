@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UtilityClassDLL;
 
 namespace DaSuKeTeMoChi.UiConfig
 {
@@ -31,14 +33,15 @@ namespace DaSuKeTeMoChi.UiConfig
                         SaveFile.WriteLine("FieldColor=#000000");
                         SaveFile.WriteLine("FieldColor=#000000");
                         SaveFile.WriteLine("SliderValue=5");
+                        SaveFile.Close();
                         return true;
                     }
-                    return false;
                 }
             }
-            catch
+            catch(Exception e)
             {
-                
+
+                DebugLog.m(e);
                 return false;
             }
 
@@ -57,6 +60,35 @@ namespace DaSuKeTeMoChi.UiConfig
             if (!directory.Exists)
             {
                 directory.Create();
+            }
+        }
+
+        public bool CheckHotKeyConfig()
+        {
+            try
+            {
+                DirectoryCheck();
+
+                bool ExitsTxtFile = File.Exists(@"Config\HotKeys.json");
+
+                if (ExitsTxtFile)
+                {
+                    return true;
+                }
+                else
+                {
+                     
+                    JObject job = new JObject();
+                    job.Add("inputSelectKey", "");
+                    job.Add("outputCopyKey", "");
+
+                    File.WriteAllText(@"Config\HotKeys.json", job.ToString());
+                    return true; 
+                }
+            }
+            catch
+            {
+                return false;
             }
         }
     }

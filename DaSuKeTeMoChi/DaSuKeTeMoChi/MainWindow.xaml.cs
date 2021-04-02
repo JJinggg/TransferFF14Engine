@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ColorPickerWPF;
+using DaSuKeTeMoChi.UiConfig.HotKey;
 using Newtonsoft.Json;
 using UtilityClassDLL;
 
@@ -31,6 +33,36 @@ namespace DaSuKeTeMoChi
         Object _settings;
         PapagoEngine engine = new PapagoEngine();
         UiConfig.CheckConfigInfo check =new UiConfig.CheckConfigInfo();
+
+
+
+        HotsKey ActivateHotkey;
+        HotsKey ResultCopyHotkey;
+
+
+
+/*        [DllImport("user32.dll")]
+        public static extern int FindWindow(string lpClassName, string lpWindowName);
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+        private const int SW_SHOWNORMAL = 1;
+        private const int SW_SHOWMINIMIZED = 2;
+        private const int SW_SHOWMAXIMIZED = 3;
+
+        void Find()
+        {
+            // 윈도우 타이틀명으로 핸들을 찾는다
+            IntPtr hWnd = (IntPtr)FindWindow(null, "Test");
+            if (!hWnd.Equals(IntPtr.Zero))
+            {
+                // 윈도우가 최소화 되어 있다면 활성화 시킨다
+                ShowWindowAsync(hWnd, SW_SHOWNORMAL);
+                // 윈도우에 포커스를 줘서 최상위로 만든다
+                SetForegroundWindow(hWnd);
+            }
+        } */
 
         private double WindowX;
         private double WindowY;
@@ -105,7 +137,7 @@ namespace DaSuKeTeMoChi
             MoveLocationConfig();
             MainWindows.Left = WindowX;
             MainWindows.Top = WindowY;
-          //  BindKey();
+            BindKey();
             try
             {
                 if (check.CheckSettingsConfig())
@@ -125,60 +157,87 @@ namespace DaSuKeTeMoChi
             }
 
         }
-
-
-
-
+         
         public void BindKey()
         {
             string jsonPath = @"Config\HotKeys.json";
+
+           if (!check.CheckHotKeyConfig()) return;
+            
             using (StreamReader r = new StreamReader(jsonPath))
             {
                 string jsontext = r.ReadToEnd();
                 var json = JsonConvert.DeserializeObject<UiConfig.HotKey.HotKeyJsonProperty.HotKeys>(jsontext);
 
-                if (json.InputSelectKey != null)
+                System.Diagnostics.Debug.WriteLine(json.InputSelectKey + "/" + json.OutputCopyKey);
+
+
+                if (!String.IsNullOrEmpty(json.InputSelectKey))
                 {
-                    string[] Inputkey = StrCut.ArrSplit(json.InputSelectKey, "+");
+                    Tuple<Key, KeyModifier> InputTuple = GetHotKey(json.InputSelectKey);
+                    ActivateHotkey= new HotsKey(InputTuple.Item1, InputTuple.Item2, ActiveHandler);
 
-                    Key Insk;
-                    Key insModi;
-
-                    foreach (var v in Inputkey)
-                    {
-
-                        var enums = (Key)Enum.Parse(typeof(Key), v, true);
-
-                        if (enums != Key.RightAlt &&
-                            enums != Key.LeftAlt &&
-                            enums != Key.RightCtrl &&
-                            enums != Key.LeftCtrl &&
-                            enums != Key.RightShift &&
-                            enums != Key.LeftShift)
-                        {
-                            Insk = enums;
-                        }
-                        else
-                        {
-                            insModi = enums;
-                        }
-                }
+                    
                 }
 
-
-
-                var _hotkey = new HotsKey(Key.F9, KeyModifier.Shift | KeyModifier.Ctrl | KeyModifier.Alt, OnHotKeyHandler); 
-                var _hotkey2 = new HotsKey(Key.F9, KeyModifier.Shift | KeyModifier.Alt, OnHotKeyHandler2);
+                if (!String.IsNullOrEmpty(json.OutputCopyKey))
+                {
+                    Tuple<Key, KeyModifier> OutputTuple = GetHotKey(json.OutputCopyKey);
+                    ResultCopyHotkey= new HotsKey(OutputTuple.Item1, OutputTuple.Item2, resultCopyHandler);
+                } 
             }
         }
-        private void OnHotKeyHandler(HotsKey hotKey)
+
+        private Tuple<Key,KeyModifier> GetHotKey(string jsontext)
         {
-            System.Diagnostics.Debug.WriteLine("KEYSET");
+             
+            string[] Inputkey = StrCut.ArrSplit(jsontext, "+");
+
+            Key Insk = Key.None;
+            KeyModifier modi = KeyModifier.None;
+
+
+            foreach (var v in Inputkey)
+            {
+
+                var enums = (Key)Enum.Parse(typeof(Key), v, true);
+
+                if (enums != Key.RightAlt &&
+                    enums != Key.LeftAlt &&
+                    enums != Key.RightCtrl &&
+                    enums != Key.LeftCtrl &&
+                    enums != Key.RightShift &&
+                    enums != Key.LeftShift)
+                {
+                    Insk = enums;
+                }
+                else
+                {
+                    if (enums == Key.RightAlt || enums == Key.LeftAlt) modi |= KeyModifier.Alt;
+                    if (enums == Key.RightCtrl || enums == Key.LeftCtrl) modi |= KeyModifier.Ctrl;
+                    if (enums == Key.RightShift || enums == Key.LeftShift) modi |= KeyModifier.Shift;
+                }
+            }
+            return Tuple.Create(Insk, modi);
+        }
+        
+        private void ActiveHandler(HotsKey hotKey)
+        {
+            this.Activate();
+            InsertTextBox.Focus();
         }
 
-        private void OnHotKeyHandler2(HotsKey hotKey)
+        private void resultCopyHandler(HotsKey hotKey)
         {
-            System.Diagnostics.Debug.WriteLine("KEYSET2");
+
+            try
+            {
+                Clipboard.SetText(ResultTextBox.Text);
+            }
+            catch
+            {
+
+            }
         }
          
         protected void MoveLocationConfig()
@@ -199,7 +258,6 @@ namespace DaSuKeTeMoChi
                 }
             }
         } 
-
         protected void CallSettings()
         {
             try
@@ -302,7 +360,6 @@ namespace DaSuKeTeMoChi
             catch
             { return false; }
         }
-
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -319,7 +376,6 @@ namespace DaSuKeTeMoChi
                 
             }
         }
-
         private async void fieldColorChange_Button_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -386,8 +442,7 @@ namespace DaSuKeTeMoChi
             try
             {
                 double temp = e.NewValue / 10;
-                Opactiys = temp;
-                //System.Diagnostics.Debug.WriteLine(temp);
+                Opactiys = temp; 
             }
             catch
             {
@@ -402,6 +457,12 @@ namespace DaSuKeTeMoChi
                 NavigationWindow navigation = new NavigationWindow();
 
                 UiConfig.SettingsWindows settingsWindows = new UiConfig.SettingsWindows();
+
+
+/*
+                ActivateHotkey.Unregister();
+                ResultCopyHotkey.Unregister();*/
+
 
                 settingsWindows.Show();
                 this.Close();

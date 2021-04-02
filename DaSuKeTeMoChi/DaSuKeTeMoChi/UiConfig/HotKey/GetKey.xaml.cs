@@ -25,6 +25,8 @@ namespace DaSuKeTeMoChi.UiConfig.HotKey
             InitializeComponent();
 
             this.KeyDown += GetKey_KeyDown;
+
+
         }
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {

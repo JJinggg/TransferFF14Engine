@@ -56,7 +56,14 @@ namespace DaSuKeTeMoChi
                 ComponentDispatcher.ThreadFilterMessage += new ThreadMessageEventHandler(ComponentDispatcherThreadFilterMessage);
             }
 
-            _dictHotKeyToCalBackProc.Add(Id, this);
+            try
+            {
+                _dictHotKeyToCalBackProc.Remove(Id);
+                _dictHotKeyToCalBackProc.Add(Id, this);
+            }
+            catch(Exception e)
+            { 
+            }
 
             Debug.Print(result.ToString() + ", " + Id + ", " + virtualKeyCode);
             return result;
