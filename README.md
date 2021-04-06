@@ -7,21 +7,21 @@
 
 Suppert Lang
 
-Kor -> Jp
-Jp -> Kor
-Kor -> Eng
-Eng -> Kor
+Kor -> Jp </br>
+Jp -> Kor </br>
+Kor -> Eng </br>
+Eng -> Kor </br>
 
 
 
-THANKSS
+THANKSS </br>
 
-Refer To 
+Refer To  </br>
 
-https://github.com/NightlyRevenger/TataruHelper
+https://github.com/NightlyRevenger/TataruHelper </br>
         
-https://github.com/drogoganor/ColorPickerWPF
+https://github.com/drogoganor/ColorPickerWPF </br>
         
-https://github.com/k4keye/Csharp-StrCutDLL
+https://github.com/k4keye/Csharp-StrCutDLL </br>
 
-https://github.com/JJinggg/WebFormatInjection
+https://github.com/JJinggg/WebFormatInjection </br>
