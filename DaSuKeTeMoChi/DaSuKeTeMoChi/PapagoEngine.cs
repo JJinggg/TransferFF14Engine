@@ -10,6 +10,7 @@ using System.Net;
 using Jurassic;
 using System.Security.Cryptography;
 using Newtonsoft.Json;
+using DaSuKeTeMoChi.JsonProperty;
 
 namespace DaSuKeTeMoChi
 {
@@ -69,8 +70,7 @@ namespace DaSuKeTeMoChi
                     {
                         Source = "ja";
                         Target = "ko";
-
-
+                         
 
                     }
                     else

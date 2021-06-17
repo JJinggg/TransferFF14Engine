@@ -16,6 +16,7 @@ using System.Reflection;
 using System.ComponentModel;
 using UtilityClassDLL;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace DaSuKeTeMoChi.UiConfig
 {
@@ -25,7 +26,7 @@ namespace DaSuKeTeMoChi.UiConfig
     public partial class SettingsWindows : Window,INotifyPropertyChanged
     {
 
-
+        UiConfig.CheckConfigInfo check = new UiConfig.CheckConfigInfo();
         Type type;
         Object _settings;
 
@@ -75,46 +76,31 @@ namespace DaSuKeTeMoChi.UiConfig
 
         #endregion
 
-
+        JsonProperty.Write_Panel_Setting_JsonProperty PanelSetting_Instance;
 
         public SettingsWindows()
         {
             InitializeComponent();
 
             this.DataContext = this;
-
-            SetUpSettingsReflection();
-            CallSettings();
-            SetUpSettings();
+            WritePannelConfig(); 
         }
 
-
-        protected void SetUpSettings()
+        protected void WritePannelConfig()
         {
+            string jsonPath = ResourceDex.PathResource.WritePannel;
+            if (!check.CheckController(jsonPath)) return;
 
-            TextColorBinder = (Color)ColorConverter.ConvertFromString((string)_settings.GetType().GetProperty("TextColor").GetValue(_settings, null));
-            FieldColorBinder = (Color)ColorConverter.ConvertFromString((string)_settings.GetType().GetProperty("FieldColor").GetValue(_settings, null));
-            SliderValue = Convert.ToInt32(_settings.GetType().GetProperty("SliderValue").GetValue(_settings, null));
-            
-
-        }
-        protected void CallSettings()
-        {
-            string[] SettingValues = File.ReadAllLines(@"Config\Settings.txt");
-            ushort Length = (ushort)SettingValues.Length;
-
-            for (ushort i = 0; i < Length; i++)
+            using (StreamReader r = new StreamReader(jsonPath))
             {
-                string[] values = StrCut.ArrSplit(SettingValues[i], "=");
-                Type ts = _settings.GetType().GetProperty(values[0]).PropertyType;
-                _settings.GetType().GetProperty(values[0]).SetValue(_settings, Convert.ChangeType(values[1], ts), null);
-            }
-        }
-        protected void SetUpSettingsReflection()
-        {
-            type = typeof(UiConfig.OverLaySettings);
-            _settings = Activator.CreateInstance(type);
-        }
+                string jsontext = r.ReadToEnd();
+                PanelSetting_Instance = JsonConvert.DeserializeObject<JsonProperty.Write_Panel_Setting_JsonProperty>(jsontext); 
+
+                TextColorBinder = (Color)ColorConverter.ConvertFromString(PanelSetting_Instance.TextColor);
+                FieldColorBinder = (Color)ColorConverter.ConvertFromString(PanelSetting_Instance.FieldColor);
+                SliderValue = Convert.ToInt32(PanelSetting_Instance.SliderValue); 
+            } 
+        } 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
@@ -128,8 +114,8 @@ namespace DaSuKeTeMoChi.UiConfig
             bool ok = ColorPickerWindow.ShowDialog(out color);
             if (ok)
             {
-                FieldColorBinder = color;
-                _settings.GetType().GetProperty("FieldColor").SetValue(_settings, color.ToString());
+                FieldColorBinder = color; 
+                PanelSetting_Instance.FieldColor = color.ToString(); 
             }
         }
         private async void TextColorChange_Button_Click(object sender, RoutedEventArgs e)
@@ -139,61 +125,38 @@ namespace DaSuKeTeMoChi.UiConfig
             if (ok)
             {
                 TextColorBinder = color;
-                _settings.GetType().GetProperty("TextColor").SetValue(_settings, color.ToString());
+                PanelSetting_Instance.TextColor = color.ToString(); 
             }
         }
         private async void Settings_Save_Button_Click(object sender, RoutedEventArgs e)
         {
 
-            SaveDataToTextFile();
+            SaveJsonFile();
             MainWindow window = new MainWindow();
 
             window.Show();
             this.Close();
         }
-       
 
-        protected async void SaveDataToTextFile()
-        { 
-            string[] Lines;
-            
-            Lines = File.ReadAllLines(@"Config\Settings.txt");
+        protected async void SaveJsonFile()
+        {
+            if (!check.CheckController(ResourceDex.PathResource.WritePannel)) return;
 
-            using (System.IO.StreamWriter SaveFile = new System.IO.StreamWriter(@"Config\Settings.txt"))
-            {
-                foreach (string lineText in Lines)
-                {
-                    string TempText = null;
-                    int PixNum = Array.IndexOf(Lines, lineText);
-                    TempText = StrCut.StrChange(lineText, null, "=", false);
-                    string WriteValue =null;
+            string JsonToText = JsonConvert.SerializeObject(PanelSetting_Instance);
 
-                    switch (TempText)
-                    {
-                        case "TextColor":
-                            WriteValue = $"{TextColorBinder}";
-                            break;
-                        case "FieldColor":
-                            WriteValue = $"{FieldColorBinder}";
-                            break;
-                        case "SliderValue":
-                            WriteValue = $"{SliderValue}";
-                            break;
-                        default:
-                            break;
-                    }
-                    StreamHandler.Writer writer = new StreamHandler.Writer();
+            File.WriteAllText(ResourceDex.PathResource.WritePannel, JsonToText);
+        } 
 
-                    writer.WriteTextToFile(SaveFile, TempText,WriteValue); 
-                }
-            } 
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void InHotKey(object sender, RoutedEventArgs e)
         {
             UiConfig.HotKey.HotKeyWindows hotKeyWindows = new UiConfig.HotKey.HotKeyWindows();
             hotKeyWindows.Show();
             this.Close(); 
+        }
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        { 
+            PanelSetting_Instance.SliderValue = e.NewValue.ToString();
         }
     }
 }

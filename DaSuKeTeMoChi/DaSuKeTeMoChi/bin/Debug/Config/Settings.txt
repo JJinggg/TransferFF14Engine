@@ -1,4 +1,0 @@
-TextColor=#FF000000
-FieldColor=#FF000000
-FieldColor=#FF000000
-SliderValue=5

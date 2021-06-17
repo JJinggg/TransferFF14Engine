@@ -41,6 +41,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -50,6 +51,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>125_icon.ico</ApplicationIcon>
@@ -93,6 +95,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="FileController\Load.cs" />
+    <Compile Include="FileController\Save.cs" />
+    <Compile Include="JsonProperty\Write_Panel_Area_JsonProperty.cs" />
+    <Compile Include="JsonProperty\Write_Panel_Setting_JsonProperty.cs" />
+    <Compile Include="ResourceDex\PathResource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PathResource.resx</DependentUpon>
+    </Compile>
     <Compile Include="UiConfig\HotKey\HotKeyJsonProperty.cs" />
     <Compile Include="UiConfig\HotKey\HotsKey.cs" />
     <Compile Include="SendDataRequest.cs" />
@@ -118,7 +129,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="EncCode.cs" />
-    <Compile Include="EncodeJsonProperty.cs" />
+    <Compile Include="JsonProperty\EncodeJsonProperty.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -154,6 +165,11 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ResourceDex\PathResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PathResource.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

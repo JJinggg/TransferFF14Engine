@@ -34,36 +34,11 @@ namespace DaSuKeTeMoChi
         PapagoEngine engine = new PapagoEngine();
         UiConfig.CheckConfigInfo check =new UiConfig.CheckConfigInfo();
 
-
-
+        JsonProperty.Write_Panel_Area_JsonProperty AreaProperty;
+         
         HotsKey ActivateHotkey;
         HotsKey ResultCopyHotkey;
-
-
-
-/*        [DllImport("user32.dll")]
-        public static extern int FindWindow(string lpClassName, string lpWindowName);
-        [DllImport("user32.dll")]
-        private static extern bool SetForegroundWindow(IntPtr hWnd);
-        [DllImport("user32.dll")]
-        private static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
-        private const int SW_SHOWNORMAL = 1;
-        private const int SW_SHOWMINIMIZED = 2;
-        private const int SW_SHOWMAXIMIZED = 3;
-
-        void Find()
-        {
-            // 윈도우 타이틀명으로 핸들을 찾는다
-            IntPtr hWnd = (IntPtr)FindWindow(null, "Test");
-            if (!hWnd.Equals(IntPtr.Zero))
-            {
-                // 윈도우가 최소화 되어 있다면 활성화 시킨다
-                ShowWindowAsync(hWnd, SW_SHOWNORMAL);
-                // 윈도우에 포커스를 줘서 최상위로 만든다
-                SetForegroundWindow(hWnd);
-            }
-        } */
-
+         
         private double WindowX;
         private double WindowY;
 
@@ -140,11 +115,10 @@ namespace DaSuKeTeMoChi
             BindKey();
             try
             {
-                if (check.CheckSettingsConfig())
+                if (check.CheckController(ResourceDex.PathResource.WritePannel))
                 {
-
-                    CallSettings();
-                    SetUpSettings();
+                     
+                    WritePannelConfig_Json(); 
                 }
                 else
                 {
@@ -160,34 +134,65 @@ namespace DaSuKeTeMoChi
          
         public void BindKey()
         {
-            string jsonPath = @"Config\HotKeys.json";
+            string jsonPath = ResourceDex.PathResource.HotKey;
 
-           if (!check.CheckHotKeyConfig()) return;
+           if (!check.CheckController(jsonPath)) return;
             
             using (StreamReader r = new StreamReader(jsonPath))
             {
                 string jsontext = r.ReadToEnd();
                 var json = JsonConvert.DeserializeObject<UiConfig.HotKey.HotKeyJsonProperty.HotKeys>(jsontext);
 
-                System.Diagnostics.Debug.WriteLine(json.InputSelectKey + "/" + json.OutputCopyKey);
-
-
-                if (!String.IsNullOrEmpty(json.InputSelectKey))
+                try
                 {
-                    Tuple<Key, KeyModifier> InputTuple = GetHotKey(json.InputSelectKey);
-                    ActivateHotkey= new HotsKey(InputTuple.Item1, InputTuple.Item2, ActiveHandler);
+                    if (!String.IsNullOrEmpty(json.InputSelectKey))
+                    {
+                        Tuple<Key, KeyModifier> InputTuple = GetHotKey(json.InputSelectKey);
+                        ActivateHotkey = new HotsKey(InputTuple.Item1, InputTuple.Item2, ActiveHandler);
 
-                    
+                    }
+                }
+                catch (Exception)
+                {
+                    System.Diagnostics.Debug.WriteLine("Activate Exception");
                 }
 
-                if (!String.IsNullOrEmpty(json.OutputCopyKey))
+                try
                 {
-                    Tuple<Key, KeyModifier> OutputTuple = GetHotKey(json.OutputCopyKey);
-                    ResultCopyHotkey= new HotsKey(OutputTuple.Item1, OutputTuple.Item2, resultCopyHandler);
+                    if (!String.IsNullOrEmpty(json.OutputCopyKey))
+                    {
+                        Tuple<Key, KeyModifier> OutputTuple = GetHotKey(json.OutputCopyKey);
+                        ResultCopyHotkey = new HotsKey(OutputTuple.Item1, OutputTuple.Item2, resultCopyHandler);
+                    }
+
+                }
+                catch (Exception)
+                {
+                    System.Diagnostics.Debug.WriteLine("Result Exception");
                 } 
             }
         }
+        protected void WritePannelConfig_Json()
+        {
+            string jsonPath = ResourceDex.PathResource.WritePannel;
+            if (!check.CheckController(jsonPath)) return;
 
+            using (StreamReader r = new StreamReader(jsonPath))
+            {
+                string jsontext = r.ReadToEnd();
+
+
+                var json = JsonConvert.DeserializeObject<JsonProperty.Write_Panel_Setting_JsonProperty>(jsontext);
+
+
+                TextColor = (SolidColorBrush)new BrushConverter().ConvertFrom(json.TextColor);
+                FieldColor = (Color)ColorConverter.ConvertFromString(json.FieldColor);
+                SliderValue = Convert.ToInt32(json.SliderValue);
+                double temp = (double)(Convert.ToDouble(SliderValue) / 10);
+                Opactiys = temp;
+            }
+
+        }   
         private Tuple<Key,KeyModifier> GetHotKey(string jsontext)
         {
              
@@ -239,57 +244,32 @@ namespace DaSuKeTeMoChi
 
             }
         }
+
          
         protected void MoveLocationConfig()
         {
-            if (check.FileCheckConfig(@"Config\LocationConfig.txt"))
-            {
-                try
-                {
+            string jsonPath = ResourceDex.PathResource.Location;
 
-
-                    string[] line = File.ReadAllLines(@"Config\LocationConfig.txt");
-                    WindowX = Convert.ToDouble(StrCut.StrChange(line[0], "=", null, true));
-                    WindowY = Convert.ToDouble(StrCut.StrChange(line[1], "=", null, true));
-                }
-                catch
-                {
-                    return;
-                }
-            }
-        } 
-        protected void CallSettings()
-        {
             try
             {
-                string[] SettingValues = File.ReadAllLines(@"Config\Settings.txt");
-                for (int i = 0; i < SettingValues.Length; i++)
+                if (!check.CheckController(jsonPath)) return;
+
+                using (StreamReader r = new StreamReader(jsonPath))
                 {
-                    string[] values = StrCut.ArrSplit(SettingValues[i], "=");
-                    Type ts = _settings.GetType().GetProperty(values[0]).PropertyType;
-                    _settings.GetType().GetProperty(values[0]).SetValue(_settings, Convert.ChangeType(values[1], ts), null);
+                    string jsontext = r.ReadToEnd();
+
+
+                    AreaProperty = JsonConvert.DeserializeObject<JsonProperty.Write_Panel_Area_JsonProperty>(jsontext);
+
+                    WindowX = AreaProperty.XPath;
+                    WindowY = AreaProperty.YPath;
                 }
             }
-            catch
+            catch (Exception)
             {
-                return;
+
             }
-        }
-        protected void SetUpSettings()
-        {
-            try
-            {
-                TextColor = (SolidColorBrush)new BrushConverter().ConvertFrom((string)_settings.GetType().GetProperty("TextColor").GetValue(_settings, null));
-                FieldColor = (Color)ColorConverter.ConvertFromString((string)_settings.GetType().GetProperty("FieldColor").GetValue(_settings, null));
-                SliderValue = Convert.ToInt32(_settings.GetType().GetProperty("SliderValue").GetValue(_settings, null));
-                double temp = (double)(Convert.ToDouble(SliderValue) / 10);
-                Opactiys = temp;
-            }
-            catch
-            {
-                return;
-            }
-        }
+        }   
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             try
@@ -310,13 +290,15 @@ namespace DaSuKeTeMoChi
                 System.Diagnostics.Debug.WriteLine(location.ToString());
                 WindowX = location.X;
                 WindowY = location.Y;
+                
+                
+                if (!check.CheckController(ResourceDex.PathResource.Location)) return;
+                AreaProperty.XPath = location.X;
+                AreaProperty.YPath = location.Y;
 
-                using (System.IO.StreamWriter SaveFile = new System.IO.StreamWriter(@"Config\LocationConfig.txt"))
-                {
-                    StreamHandler.Writer writer = new StreamHandler.Writer();
-                    writer.WriteTextToFile(SaveFile, "X", location.X.ToString());
-                    writer.WriteTextToFile(SaveFile, "Y", location.Y.ToString());
-                }
+                string jsonToText = JsonConvert.SerializeObject(AreaProperty);
+                File.WriteAllText(ResourceDex.PathResource.Location, jsonToText);
+
             }
             catch
             {
@@ -394,6 +376,8 @@ namespace DaSuKeTeMoChi
 
             } 
         }
+
+
         private void JpCon_Checked(object sender, RoutedEventArgs e)
         {
             Region = "Kor";
@@ -457,12 +441,7 @@ namespace DaSuKeTeMoChi
                 NavigationWindow navigation = new NavigationWindow();
 
                 UiConfig.SettingsWindows settingsWindows = new UiConfig.SettingsWindows();
-
-
-/*
-                ActivateHotkey.Unregister();
-                ResultCopyHotkey.Unregister();*/
-
+                 
 
                 settingsWindows.Show();
                 this.Close();
@@ -488,8 +467,7 @@ namespace DaSuKeTeMoChi
                 this.Close();
             }
         }
-
-
+         
     }
 }
 

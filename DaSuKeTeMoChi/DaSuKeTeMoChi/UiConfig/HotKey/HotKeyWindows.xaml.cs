@@ -106,14 +106,14 @@ namespace DaSuKeTeMoChi.UiConfig.HotKey
             job.Add("inputSelectKey", selectKey);
             job.Add("outputCopyKey", outcopyKey);
 
-            File.WriteAllText(@"Config\HotKeys.json", job.ToString());
+            File.WriteAllText(ResourceDex.PathResource.HotKey, job.ToString());
 
         }
 
 
         protected void LoadConfig()
         {
-            string jsonPath = @"Config\HotKeys.json";
+            string jsonPath = ResourceDex.PathResource.HotKey;
             using (StreamReader r = new StreamReader(jsonPath))
             {
                 string jsontext = r.ReadToEnd();

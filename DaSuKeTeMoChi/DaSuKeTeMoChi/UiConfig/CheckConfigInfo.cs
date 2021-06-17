@@ -11,49 +11,13 @@ namespace DaSuKeTeMoChi.UiConfig
 {
     public class CheckConfigInfo
     {
-
-        public bool CheckSettingsConfig()
-        {
-            try
-            {
-                DirectoryCheck();
-                bool ExitsTxtFile = File.Exists(@"Config\Settings.txt");
-
-                if (ExitsTxtFile)
-                {
-                    return true;
-                }
-                else
-                {
-
-                    using (System.IO.StreamWriter SaveFile = new System.IO.StreamWriter(@"Config\Settings.txt"))
-                    {
-
-                        SaveFile.WriteLine("TextColor=#000000");
-                        SaveFile.WriteLine("FieldColor=#000000");
-                        SaveFile.WriteLine("FieldColor=#000000");
-                        SaveFile.WriteLine("SliderValue=5");
-                        SaveFile.Close();
-                        return true;
-                    }
-                }
-            }
-            catch(Exception e)
-            {
-
-                DebugLog.m(e);
-                return false;
-            }
-
-
-        }
-
-        public bool FileCheckConfig(string Filename)
-        {
-            return File.Exists($@"{Filename}");
-        }
+        public bool isDirectoryCheck = false;
+  
         public void DirectoryCheck()
         {
+
+            if (isDirectoryCheck) return;
+
             string Path = @"Config";
             DirectoryInfo directory = new DirectoryInfo(Path);
 
@@ -61,35 +25,47 @@ namespace DaSuKeTeMoChi.UiConfig
             {
                 directory.Create();
             }
-        }
 
-        public bool CheckHotKeyConfig()
+            isDirectoryCheck = true;
+        }
+         
+        public bool CheckController(string Sector)
         {
             try
             {
                 DirectoryCheck();
 
-                bool ExitsTxtFile = File.Exists(@"Config\HotKeys.json");
+                bool ExitsTxtFile = File.Exists(Sector);
 
-                if (ExitsTxtFile)
+                JObject job = new JObject();
+
+                if (ExitsTxtFile) return true;
+
+                if (Sector.Equals(ResourceDex.PathResource.HotKey))
                 {
-                    return true;
-                }
-                else
-                {
-                     
-                    JObject job = new JObject();
                     job.Add("inputSelectKey", "");
                     job.Add("outputCopyKey", "");
-
-                    File.WriteAllText(@"Config\HotKeys.json", job.ToString());
-                    return true; 
                 }
+                else if (Sector.Equals(ResourceDex.PathResource.WritePannel))
+                {
+                    job.Add("textColor", "#FF000000");
+                    job.Add("fieldColor", "#FF000000");
+                    job.Add("sliderValue", "5");
+                }
+                else if (Sector.Equals(ResourceDex.PathResource.Location))
+                {
+                    job.Add("x", 0);
+                    job.Add("y", 0);
+                }
+
+                File.WriteAllText(Sector, job.ToString());
+                return true;
             }
-            catch
+            catch (Exception)
             {
+
                 return false;
-            }
-        }
+            } 
+        } 
     }
 }
