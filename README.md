@@ -12,11 +12,9 @@ Jp -> Kor </br>
 Kor -> Eng </br>
 Eng -> Kor </br>
 
-
-
-THANKSS </br>
-
+ 
 Refer To  </br>
+
 
 https://github.com/NightlyRevenger/TataruHelper </br>
         
